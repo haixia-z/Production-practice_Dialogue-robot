@@ -1,0 +1,165 @@
+body{
+	margin: 0px;
+	padding: 0px;
+	text-align: center;
+
+}
+ul{
+	margin: 0px;
+	padding: 0px;
+}
+a{
+	text-decoration: none;
+}
+.allBox{
+	display: flex;
+	justify-content: space-between;
+}
+.leftNav{
+	width: 16.2%;
+	height: 1050px;
+	color: #676a6c;
+	background-color: #2f4050;
+}
+.navBox{
+	display: flex;
+	 flex-direction: column;
+}
+.navTitle{
+	width: 100%;
+	height: 65px;
+}
+.titleBox{
+	width: 100%;
+	height: 100%;
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
+}
+.title{
+	font-size: 18px;
+	color: rgb(205, 205, 205);
+}
+.navHeader{
+	width: 100%;
+	height: 47px;
+	background-color: #293846;
+}
+.headerBox{
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.header{
+	color: #ffffff;
+}
+.topWrapper{
+width: 83.8%;
+background-color: #f3f3f4;
+}
+.rightNav{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	height: 65px;
+	color: #676a6c;
+	background-color: #ffffff;
+    border-color: rgb(187, 187, 187);
+    border-width: 0px;
+    border-style: solid;
+    box-shadow: rgb(0 21 41 / 12%) 0px 1px 4px 0px;
+    padding: 0 40px;
+}
+.welcomBox{
+	width: 23%;
+	display: flex;
+	justify-content: space-between;
+}
+.Astyle{
+	color: #676a6c;
+}
+#mainWrapper{
+	margin: 20px 10px 40px;
+	background-color: #f3f3f4;
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+.information{
+	display: flex;
+	justify-content: space-between;
+	width: 35%;
+	background-color: white;
+	padding: 20px;
+	border:1px solid #e7eaec;
+	margin-bottom: 20px;
+}
+.firstInfor{
+	width: 30%;
+}
+.infoFigure{
+	border-radius: 50%!important;
+	width: 100%;
+	height: 84px;
+}
+.infoIdentify{
+	font-weight: 600;
+}
+.secondInfor{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: left;
+	color: rgb(103, 106, 108);
+	margin-left: 35px;
+}
+.infoName{
+	font-weight: 600;
+	font-size: 16px;
+	margin-bottom: 10px;
+}
+.infoSite{
+	width: 70%;
+}
+.handleWork{
+	width: 35%;
+	background-color: white;
+	padding: 20px;
+	border:1px solid #e7eaec;
+	margin-bottom: 20px;
+}
+.operatorDiary{
+	background-color: white;
+	padding: 20px;
+	border:1px solid #e7eaec;
+	margin-bottom: 20px;
+	width: 85%;
+	text-align: left;
+}
+.path{
+	margin-bottom: 10px;
+}
+.breadcrumb{
+	text-align: left;
+}
+.content{
+	margin: 20px 30px 40px;
+	
+}
+.searchNum{
+	padding-left: 10px;
+	float: left;
+}
+.userAvater{
+	width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+#firstInfor{
+	display: flex;
+	align-items: center;
+}
