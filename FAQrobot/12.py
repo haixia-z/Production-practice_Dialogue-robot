@@ -5,11 +5,11 @@ import logging
 from collections import deque
 from urllib import request
 
-import ET
 import app as app
 import jieba
 import jieba.posseg as pseg
-import self as self
+from flask import Flask
+from self import self
 
 from WXBizMsgCrypt import WXBizMsgCrypt
 from utils import (
@@ -32,7 +32,7 @@ class zhishiku(object):
 
 	def __str__(self):
 		return 'q=' + str(self.q) + '\na=' + str(self.a) + '\nq_word=' + str(self.q_word) + '\nq_vec=' + str(self.q_vec)
-	# return 'a=' + str(self.a) + '\nq=' + str(self.q)
+		# return 'a=' + str(self.a) + '\nq=' + str(self.q)
 
 
 def jsonify(param):
@@ -44,7 +44,7 @@ class AuthVerify:
 
 
 class FAQrobot(object):
-	def __init__(self, zhishitxt='FAQ_减肥.txt', lastTxtLen=10, usedVec=False):
+	def __init__(self, zhishitxt='FAQ_Q.txt', lastTxtLen=10, usedVec=False):
 		# usedVec 如果是True 在初始化时会解析词向量，加快计算句子相似度的速度
 		self.lastTxt = deque([], lastTxtLen)
 		self.zhishitxt = zhishitxt
@@ -52,7 +52,6 @@ class FAQrobot(object):
 		self.reload()
 
 	def load_qa(self):
-		print('问答知识库开始载入')
 		self.zhishiku = []
 		with open(self.zhishitxt, encoding='utf-8') as f:
 			txt = f.readlines()
@@ -97,7 +96,7 @@ class FAQrobot(object):
 		self.load_qa()
 		self.load_embedding()
 
-		print('问答知识库载入完毕')
+		print('请输入问题')
 
 	def maxSimTxt(self, intxt, simCondision=0.1, simType='simple'):
 		"""
@@ -142,56 +141,8 @@ class FAQrobot(object):
 			return ''
 		else:
 			outtxt = self.maxSimTxt(intxt, simType=simType)
-		# 输出回复内容，并计入日志
+			# 输出回复内容，并计入日志
 		return outtxt
-
-
-def server_run(self):
-	app = Flask(__name__)
-
-	@app.route('/index', methods=['GET', 'POST'])
-	def index():
-
-		wxcpt = WXBizMsgCrypt(self.sToken, self.sEncodingAESKey, self.sCorpID)
-		# 获取url验证时微信发送的相关参数
-		sVerifyMsgSig = request.args.get('msg_signature')
-		sVerifyTimeStamp = request.args.get('timestamp')
-		sVerifyNonce = request.args.get('nonce')
-		sVerifyEchoStr = request.args.get('echostr')
-
-		# 验证url
-		if request.method == 'GET':
-			ret, sEchoStr = wxcpt.VerifyURL(sVerifyMsgSig, sVerifyTimeStamp, sVerifyNonce, sVerifyEchoStr)
-			print
-			type(ret)
-			print
-			type(sEchoStr)
-
-			if (ret != 0):
-				print
-				"ERR: VerifyURL ret:" + str(ret)
-				sys.exit(1)
-			return sEchoStr
-
-		# 接收客户端消息
-		if request.method == 'POST':
-			sReqMsgSig = sVerifyMsgSig
-			sReqTimeStamp = sVerifyTimeStamp
-			sReqNonce = sVerifyNonce
-			sReqData = request.data
-			print(sReqData)
-
-			ret, sMsg = wxcpt.DecryptMsg(sReqData, sReqMsgSig, sReqTimeStamp, sReqNonce)
-			print
-			ret, sMsg
-			if (ret != 0):
-				print
-				"ERR: DecryptMsg ret: " + str(ret)
-				sys.exit(1)
-			# 解析发送的内容并打印
-
-			xml_tree = ET.fromstring(sMsg)
-			print('xml_tree is ', xml_tree)
 
 
 # !/usr/bin/python
@@ -201,20 +152,22 @@ import time
 import requests
 import json, os
 
-
 class WeChat_SMS:
 	def __init__(self):
-		self.CORPID = 'ww9a6302cc547b2335'  # 企业ID， 登陆企业微信，在我的企业-->企业信息里查看
-		self.CORPSECRET = 'c9r4IfKtmmdnElLb9tCe_rxKc5B9S0m9AZEe0-u0ozI'  # 自建应用，每个自建应用里都有单独的secret
-		self.AGENTID = '1000002'  # 应用代码
+		self.CORPID = 'wwf5f4cf4c915c524a'  # 企业ID， 登陆企业微信，在我的企业-->企业信息里查看
+		self.CORPSECRET = 'izCdX8TWllnLMyquKl2FY6u0EBRy-Ygk2xMLuf2ukXY'  # 自建应用，每个自建应用里都有单独的secret
+		self.AGENTID = '1000003'  # 应用代码
 		self.TOUSER = "@all"  # 接收者用户名,@all 全体成员
+        self.sToken='4uGyOxGhJMp6dxW'
+        self.sEncodingAESKey='lYQzvLkNGxOPeYFLsRyn11YtHgum1IAjOCFd3BJdt5g'
+
+
 
 	def _get_access_token(self):
 		url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken'
 		values = {'corpid': self.CORPID, 'corpsecret': self.CORPSECRET, }
 		req = requests.post(url, params=values)
 		data = json.loads(req.text)
-		# print (data)
 		return data["access_token"]
 
 	def get_access_token(self):
@@ -237,7 +190,25 @@ class WeChat_SMS:
 					f.write('\t'.join([str(cur_time), access_token]))
 					return access_token
 
+	def send_data(self, msg):
 
+
+		send_url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=' + self.get_access_token()
+		send_values = {
+			"touser": self.TOUSER,
+			# "toparty": self.TOPARY, 	#设置给部门发送
+			"msgtype": "text",
+			"agentid": self.AGENTID,
+			"text": {
+				"content": msg
+			},
+			"safe": "0"
+		}
+		send_msges = (bytes(json.dumps(send_values), 'utf-8'))
+		respone = requests.post(send_url, send_msges)
+		respone = respone.json()  # 当返回的数据是json串的时候直接用.json即可将respone转换成字典
+		# print (respone["errmsg"])
+		return respone["errmsg"]
 class Flask:
 	pass
 
@@ -247,27 +218,13 @@ def server_run(self):
 
 	@app.route('/index', methods=['GET', 'POST'])
 	def index(ET=None):
-
-		wxcpt = WXBizMsgCrypt(self.sToken, self.sEncodingAESKey, self.sCorpID)
+		wxcpt = WXBizMsgCrypt('4uGyOxGhJMp6dxW', 'lYQzvLkNGxOPeYFLsRyn11YtHgum1IAjOCFd3BJdt5g', 'wwf5f4cf4c915c524a')
 		# 获取url验证时微信发送的相关参数
 		sVerifyMsgSig = request.args.get('msg_signature')
 		sVerifyTimeStamp = request.args.get('timestamp')
 		sVerifyNonce = request.args.get('nonce')
 		sVerifyEchoStr = request.args.get('echostr')
 
-		# 验证url
-		if request.method == 'GET':
-			ret, sEchoStr = wxcpt.VerifyURL(sVerifyMsgSig, sVerifyTimeStamp, sVerifyNonce, sVerifyEchoStr)
-			print
-			type(ret)
-			print
-			type(sEchoStr)
-
-			if (ret != 0):
-				print
-				"ERR: VerifyURL ret:" + str(ret)
-				sys.exit(1)
-			return sEchoStr
 
 		# 接收客户端消息
 		if request.method == 'POST':
@@ -341,8 +298,6 @@ def server_run(self):
 			from_username = xml_tree.find("FromUserName").text
 			print('content')
 			return {'create_time': create_time, 'from_username': from_username, 'content': content}
-
-
 # if __name__ == '__main__':
 #     wx = WeChat_SMS()
 #     wx.send_data(msg="你好呀")
@@ -360,12 +315,11 @@ def server_run(self):
 #         print(line)
 #         wx.send_data(msg=line)
 
-
 if __name__ == '__main__':
 	robot = FAQrobot('FAQ_Q.txt', usedVec=False)
 	while True:
 		# simType=simple, simple_pos, vec, all
-		wx = WeChat_SMS()
-		wx.server_run(self)
-	# wx.send_data(msg=robot.answer(input('输入：'), 'simple_pos'))
-	# print('回复：' + robot.answer(input('输入：'), 'simple_pos') + '\n')
+	  wx = WeChat_SMS()
+	  wx.server_run()wxcpt = WXBizMsgCrypt('4uGyOxGhJMp6dxW', 'lYQzvLkNGxOPeYFLsRyn11YtHgum1IAjOCFd3BJdt5g', 'wwf5f4cf4c915c524a')
+
+

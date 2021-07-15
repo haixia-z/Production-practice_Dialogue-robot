@@ -133,7 +133,7 @@ class FAQrobot(object):
 		if simType == 'all':  # 用于测试不同类型方法的准确度，返回空文本
 			for method in ('simple', 'simple_pos', 'vec'):
 				outtext = 'method:\t' + self.maxSim(intxt, simType=method)
-				print(outtext)
+				prinihant(outtext)
 
 			return ''
 		else:
